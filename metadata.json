@@ -1,0 +1,5 @@
+{
+  "name": "NON SOLO FUMO - Gestionale Tabaccheria",
+  "description": "App gestionale per tabaccherie con data entry vocale, monitoraggio aggi e corrispettivi, ed export per commercialista.",
+  "requestFramePermissions": ["microphone"]
+}

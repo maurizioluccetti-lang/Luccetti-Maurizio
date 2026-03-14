@@ -1,0 +1,90 @@
+{
+  "entities": {
+    "Transaction": {
+      "title": "Transaction",
+      "description": "A daily entry for revenue or commission (aggio).",
+      "type": "object",
+      "properties": {
+        "date": {
+          "type": "string",
+          "format": "date",
+          "description": "The date of the transaction."
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "Mooney",
+            "Lotto",
+            "Gratta e Vinci",
+            "Sisal",
+            "4%",
+            "10%",
+            "22%",
+            "Altro"
+          ],
+          "description": "The category of the transaction."
+        },
+        "type": {
+          "type": "string",
+          "enum": ["Agio", "Corrispettivo"],
+          "description": "Whether it is a commission (Agio) or direct sale (Corrispettivo)."
+        },
+        "grossAmount": {
+          "type": "number",
+          "description": "The gross amount (total collected)."
+        },
+        "netAmount": {
+          "type": "number",
+          "description": "The net amount (commission earned, if applicable)."
+        },
+        "ivaRate": {
+          "type": "number",
+          "description": "The IVA rate for corrispettivi (e.g., 4, 10, 22)."
+        },
+        "isVentilato": {
+          "type": "boolean",
+          "description": "Whether the corrispettivo is 'ventilato'."
+        },
+        "isArt74": {
+          "type": "boolean",
+          "description": "Whether the agio is excluded under Art. 74."
+        },
+        "notes": {
+          "type": "string",
+          "description": "Optional notes."
+        },
+        "uid": {
+          "type": "string",
+          "description": "The user ID who created the record."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp of creation."
+        }
+      },
+      "required": ["date", "category", "type", "grossAmount", "uid", "createdAt"]
+    },
+    "UserProfile": {
+      "title": "User Profile",
+      "description": "User specific settings and profile information.",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string" },
+        "displayName": { "type": "string" },
+        "role": { "type": "string", "enum": ["admin", "user"] }
+      },
+      "required": ["email", "role"]
+    }
+  },
+  "firestore": {
+    "/transactions/{transactionId}": {
+      "schema": "Transaction",
+      "description": "Collection of daily transactions."
+    },
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "User profile documents."
+    }
+  }
+}

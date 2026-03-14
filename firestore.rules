@@ -1,0 +1,80 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: transactions
+    // Document ID: auto-generated
+    // Fields:
+    //   - date: string (required, YYYY-MM-DD)
+    //   - category: string (required, enum)
+    //   - type: string (required, enum)
+    //   - grossAmount: number (required)
+    //   - netAmount: number (optional)
+    //   - ivaRate: number (optional)
+    //   - isVentilato: bool (optional)
+    //   - isArt74: bool (optional)
+    //   - notes: string (optional)
+    //   - uid: string (required)
+    //   - createdAt: timestamp (required)
+    //
+    // Collection: users
+    // Document ID: userId
+    // Fields:
+    //   - email: string (required)
+    //   - role: string (required, enum)
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isDocOwner() {
+      return isAuthenticated() && request.auth.uid == resource.data.uid;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() &&
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+          (request.auth.token.email == "maurizio.luccetti@gmail.com" && request.auth.token.email_verified == true));
+    }
+
+    function isValidTransaction(data) {
+      return data.keys().hasAll(['date', 'category', 'type', 'grossAmount', 'uid', 'createdAt']) &&
+             data.date is string && data.date.matches("^\\d{4}-\\d{2}-\\d{2}$") &&
+             data.category in ['Mooney', 'Lotto', 'Gratta e Vinci', 'Sisal', '4%', '10%', '22%', 'Altro'] &&
+             data.type in ['Agio', 'Corrispettivo'] &&
+             data.grossAmount is number &&
+             data.uid == request.auth.uid;
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isAuthenticated() && request.auth.uid == userId && request.resource.data.role == 'user';
+      allow update: if isAdmin();
+    }
+
+    match /transactions/{transactionId} {
+      allow read: if isDocOwner() || isAdmin();
+      allow create: if isAuthenticated() && isValidTransaction(request.resource.data);
+      allow update: if (isDocOwner() || isAdmin()) && isValidTransaction(request.resource.data);
+      allow delete: if isDocOwner() || isAdmin();
+    }
+  }
+}
