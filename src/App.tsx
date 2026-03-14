@@ -139,9 +139,9 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-[#050505] text-zinc-100 flex flex-col md:flex-row">
+    <div className="h-full bg-[#050505] text-zinc-100 flex flex-col md:flex-row overflow-hidden">
       {/* Desktop Sidebar */}
-      <aside className="hidden md:flex w-72 flex-col bg-[#0a0a0a] border-r border-white/5 p-8 sticky top-0 h-screen">
+      <aside className="hidden md:flex w-72 flex-col bg-[#0a0a0a] border-r border-white/5 p-8 sticky top-0 h-full">
         <div className="mb-12">
           <h1 className="text-2xl font-black tracking-tighter uppercase italic">NSF</h1>
           <p className="text-[10px] text-zinc-500 uppercase tracking-[0.2em] font-bold">Web Platform</p>
@@ -199,7 +199,7 @@ export default function App() {
         </button>
       </header>
 
-      <main className="flex-1 p-6 md:p-12 max-w-6xl mx-auto w-full">
+      <main className="flex-1 p-6 md:p-12 max-w-6xl mx-auto w-full overflow-y-auto pb-32 md:pb-12">
         {error && (
           <div className="bg-red-500/10 border border-red-500/20 p-4 rounded-2xl flex items-center gap-3 text-red-400 mb-8">
             <AlertCircle className="w-5 h-5 shrink-0" />
